@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "build": "next build .",
-    "next:build": "next build ."
+    "build": "next build",
+    "next:build": "next build"
   },
   "keywords": [
     "webrtc",
