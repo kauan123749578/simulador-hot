@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CallSimulador - Criar Call</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .result-url {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .copy-btn {
+            margin-top: 10px;
+            background: #4caf50;
+            font-size: 14px;
+            padding: 8px 16px;
+        }
+
+        .link-group {
+            margin-top: 15px;
+        }
+
+        .link-group a {
+            display: inline-block;
+            margin-top: 8px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .link-group a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎥 CallSimulador</h1>
+        <p class="subtitle">Vídeo pré-gravado + Voz ao vivo</p>
+        <p style="text-align: center; margin-top: 10px;">
+            <a href="/dashboard.html" style="color: #667eea; text-decoration: none; font-weight: 500;">
+                📊 Abrir Dashboard →
+            </a>
+        </p>
+
+        <form id="createForm">
+            <div class="form-group">
+                <label for="videoUrl">URL do Vídeo</label>
+                <input 
+                    type="url" 
+                    id="videoUrl" 
+                    placeholder="https://exemplo.com/video.mp4" 
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="callerName">Nome de quem está ligando (opcional)</label>
+                <input
+                    type="text"
+                    id="callerName"
+                    placeholder="Bia"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Foto de perfil (upload opcional)</label>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div style="width: 56px; height: 56px; border-radius: 999px; border: 2px solid rgba(102,126,234,0.65); overflow: hidden; display: grid; place-items: center; background: rgba(255,255,255,0.06);">
+                        <img id="avatarPreviewImg" alt="Preview avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                        <span id="avatarPreviewFallback" style="font-weight: 800; color: rgba(0,0,0,0.65);">?</span>
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="file" id="callerAvatarFile" accept="image/*" style="display:none;">
+                        <button type="button" id="selectAvatarBtn" style="width: auto; padding: 10px 14px; background: #333; border-radius: 8px; color: #fff; border: none; cursor: pointer;">Escolher foto</button>
+                        <button type="button" id="removeAvatarBtn" style="width: auto; padding: 10px 14px; margin-left: 8px; background: #555; border-radius: 8px; color: #fff; border: none; cursor: pointer;">Remover</button>
+                        <div style="margin-top: 6px; font-size: 12px; color: #777;">PNG/JPG até 10MB</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" id="createBtn">Criar Call</button>
+        </form>
+
+        <div class="result" id="result">
+            <h3>✅ Call criada com sucesso!</h3>
+            <div class="link-group">
+                <strong>Link do Simulador (para enviar pro lead):</strong>
+                <div class="result-url" id="ringUrl"></div>
+                <button class="copy-btn" onclick="copyToClipboard('ringUrl')">Copiar Link Simulador</button>
+            </div>
+            <div class="link-group">
+                <strong>Link para Cliente:</strong>
+                <div class="result-url" id="guestUrl"></div>
+                <button class="copy-btn" onclick="copyToClipboard('guestUrl')">Copiar Link Cliente</button>
+            </div>
+            <div class="link-group">
+                <strong>Link para Host:</strong>
+                <div class="result-url" id="hostUrl"></div>
+                <button class="copy-btn" onclick="copyToClipboard('hostUrl')">Copiar Link Host</button>
+            </div>
+            <div class="link-group">
+                <a id="hostLink" href="#" target="_blank">Abrir Painel Host →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('createForm');
+        const result = document.getElementById('result');
+        const createBtn = document.getElementById('createBtn');
+        window.__uploadedAvatarUrl = null;
+
+        const avatarFileInput = document.getElementById('callerAvatarFile');
+        const selectAvatarBtn = document.getElementById('selectAvatarBtn');
+        const removeAvatarBtn = document.getElementById('removeAvatarBtn');
+        const avatarPreviewImg = document.getElementById('avatarPreviewImg');
+        const avatarPreviewFallback = document.getElementById('avatarPreviewFallback');
+        const callerNameInput = document.getElementById('callerName');
+
+        function initials(name) {
+            const parts = String(name || '').trim().split(/\s+/).filter(Boolean);
+            const a = parts[0]?.[0] || '';
+            const b = parts.length > 1 ? (parts[parts.length - 1]?.[0] || '') : '';
+            return ((a + b) || '?').toUpperCase();
+        }
+
+        function updateAvatarFallback() {
+            avatarPreviewFallback.textContent = initials(callerNameInput?.value || 'Bia');
+        }
+
+        updateAvatarFallback();
+        callerNameInput?.addEventListener('input', updateAvatarFallback);
+
+        selectAvatarBtn?.addEventListener('click', () => avatarFileInput.click());
+        removeAvatarBtn?.addEventListener('click', () => {
+            window.__uploadedAvatarUrl = null;
+            avatarFileInput.value = '';
+            avatarPreviewImg.style.display = 'none';
+            avatarPreviewImg.src = '';
+            avatarPreviewFallback.style.display = 'inline';
+            updateAvatarFallback();
+        });
+
+        avatarFileInput?.addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            if (!file.type.startsWith('image/')) {
+                alert('Selecione uma imagem (PNG/JPG).');
+                return;
+            }
+            if (file.size > 10 * 1024 * 1024) {
+                alert('Imagem muito grande! Máximo: 10MB');
+                return;
+            }
+
+            // preview
+            const localUrl = URL.createObjectURL(file);
+            avatarPreviewImg.src = localUrl;
+            avatarPreviewImg.style.display = 'block';
+            avatarPreviewFallback.style.display = 'none';
+
+            // upload
+            try {
+                const fd = new FormData();
+                fd.append('avatar', file);
+                const resp = await fetch('/api/upload-avatar', { method: 'POST', body: fd });
+                const data = await resp.json();
+                if (!resp.ok) throw new Error(data?.error || 'Erro ao enviar avatar');
+                window.__uploadedAvatarUrl = data.avatarUrl;
+            } catch (err) {
+                console.error(err);
+                alert('Erro ao fazer upload do avatar');
+                window.__uploadedAvatarUrl = null;
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const videoUrl = document.getElementById('videoUrl').value;
+            const callerName = document.getElementById('callerName').value;
+            const callerAvatarUrl = window.__uploadedAvatarUrl || null;
+            createBtn.disabled = true;
+            createBtn.textContent = 'Criando...';
+
+            try {
+                const response = await fetch('/api/create-call', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ videoUrl, callerName, callerAvatarUrl })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const baseUrl = window.location.origin;
+                    document.getElementById('ringUrl').textContent = baseUrl + data.ringUrl;
+                    document.getElementById('guestUrl').textContent = baseUrl + data.url;
+                    document.getElementById('hostUrl').textContent = baseUrl + data.hostUrl;
+                    document.getElementById('hostLink').href = baseUrl + data.hostUrl;
+                    
+                    result.classList.add('show');
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (error) {
+                alert('Erro ao criar call: ' + error.message);
+            } finally {
+                createBtn.disabled = false;
+                createBtn.textContent = 'Criar Call';
+            }
+        });
+
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Link copiado!');
+            });
+        }
+    </script>
+</body>
+</html>
+
