@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { apiFetch } from "@/lib/api";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const next = params.get("next") || "/";
@@ -40,6 +40,65 @@ export default function LoginPage() {
   }
 
   return (
+    <form className="space-y-6" onSubmit={onSubmit}>
+      <div className="space-y-2">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Usuário</label>
+        <Input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Digite seu usuário"
+          type="text"
+          className="h-12 border-neutral-800 bg-black text-white placeholder:text-gray-600 focus:border-[#d61f1f] transition-all"
+          disabled={loading}
+        />
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Senha</label>
+        <div className="relative">
+          <Input
+            type={showPassword ? "text" : "password"}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+            className="h-12 border-neutral-800 bg-black pr-12 text-white placeholder:text-gray-600 focus:border-[#d61f1f] transition-all"
+            disabled={loading}
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#d61f1f] transition-colors"
+            disabled={loading}
+          >
+            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      {error ? (
+        <div className="rounded-lg border border-red-900/50 bg-red-900/20 p-3 text-xs text-red-200 animate-shake">
+          {error}
+        </div>
+      ) : null}
+
+      <Button
+        className="h-12 w-full bg-gradient-to-r from-[#b91c1c] to-[#d61f1f] text-sm font-bold uppercase tracking-widest text-white shadow-lg shadow-red-900/20 hover:from-[#991b1b] hover:to-[#b91c1c] transition-all transform active:scale-[0.98]"
+        disabled={loading}
+        type="submit"
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+            Entrando...
+          </span>
+        ) : "Acessar Painel"}
+      </Button>
+    </form>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <div className="flex min-h-screen items-center justify-center bg-black px-4 py-10 relative overflow-hidden" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* Background Decorativo Estilo Dashboard */}
       <div className="absolute inset-0 z-0">
@@ -69,60 +128,14 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <form className="space-y-6" onSubmit={onSubmit}>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Usuário</label>
-              <Input
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Digite seu usuário"
-                type="text"
-                className="h-12 border-neutral-800 bg-black text-white placeholder:text-gray-600 focus:border-[#d61f1f] transition-all"
-                disabled={loading}
-              />
+          <React.Suspense fallback={
+            <div className="flex flex-col items-center justify-center py-10 gap-4">
+              <span className="h-10 w-10 animate-spin rounded-full border-4 border-red-600/20 border-t-red-600" />
+              <p className="text-xs text-white/50 animate-pulse">Carregando formulário...</p>
             </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Senha</label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••"
-                  className="h-12 border-neutral-800 bg-black pr-12 text-white placeholder:text-gray-600 focus:border-[#d61f1f] transition-all"
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#d61f1f] transition-colors"
-                  disabled={loading}
-                >
-                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                </button>
-              </div>
-            </div>
-
-            {error ? (
-              <div className="rounded-lg border border-red-900/50 bg-red-900/20 p-3 text-xs text-red-200 animate-shake">
-                {error}
-              </div>
-            ) : null}
-
-            <Button
-              className="h-12 w-full bg-gradient-to-r from-[#b91c1c] to-[#d61f1f] text-sm font-bold uppercase tracking-widest text-white shadow-lg shadow-red-900/20 hover:from-[#991b1b] hover:to-[#b91c1c] transition-all transform active:scale-[0.98]"
-              disabled={loading}
-              type="submit"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/20 border-t-white" />
-                  Entrando...
-                </span>
-              ) : "Acessar Painel"}
-            </Button>
-          </form>
+          }>
+            <LoginForm />
+          </React.Suspense>
 
           <div className="mt-8 pt-6 border-t border-neutral-800 flex flex-col items-center gap-4">
             <p className="text-xs text-gray-500">Ainda não tem acesso?</p>
