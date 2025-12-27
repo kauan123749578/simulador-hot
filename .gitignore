@@ -1,0 +1,12 @@
+node_modules/
+.env
+.DS_Store
+*.log
+.vscode/
+.idea/
+public/uploads/
+*.mp4
+*.webm
+*.mov
+*.avi
+
